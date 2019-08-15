@@ -7,7 +7,7 @@ public class PlayerHover : MonoBehaviour
 {
     Player player;
 
-    public float glideStrength;
+    public float fallingSpeed;
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +22,16 @@ public class PlayerHover : MonoBehaviour
         {
             if (Input.GetKey(player.jumpKey))
             {
-                player.Glide(glideStrength);
+                if (player.velocity.y < 0)
+                {
+                    player.velocity.y = fallingSpeed;
+                    player.anim.SetBool("Gliding", true);
+                }
+                
+            }
+            else
+            {
+                player.anim.SetBool("Gliding", false);
             }
         }
     }
