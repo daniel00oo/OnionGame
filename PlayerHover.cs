@@ -39,11 +39,16 @@ public class PlayerHover : MonoBehaviour
                     player.velocity.y = fallingSpeed;
                     player.anim.SetBool("Gliding", true);
                 }
+                else
+                {
+                    player.anim.SetBool("Gliding", false);
+                }
                 
             }
             else
             {
                 timeSinceHoverStart = Time.time;
+                player.anim.SetBool("Gliding", false);
             }
         }
         else
