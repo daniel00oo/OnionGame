@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     [HideInInspector]
     public Vector3 velocity;
     public float staminaMax;
-    private float currentStamina;
+    public float currentStamina;
     [Tooltip("Time it takes for stamina to start recharging")]
     public float idleStaminaTime;
     public float secondsToFullStamina;
@@ -38,13 +38,15 @@ public class Player : MonoBehaviour
         controller = GetComponent<Movement2D>();
         jumpKey = KeyCode.Space;
         currentJumpCount = nrOfJumps;
-        staminaRechargePerFrame = secondsToFullStamina * Time.deltaTime;
+        
         currentStamina = staminaMax;
     }
 
     // Update is called once per frame
     void Update()
     {
+        staminaRechargePerFrame = (staminaMax / secondsToFullStamina) * Time.deltaTime;
+        
         if (Time.time - staminaRechargeTimer > idleStaminaTime && currentStamina < staminaMax)
         {
             RechargeStamina(staminaRechargePerFrame);
@@ -82,7 +84,7 @@ public class Player : MonoBehaviour
         velocity.x = input.x * moveSpeed;
 
         //Animation handling
-        
+        ///*
         if (velocity.x > 0)
         {
             anim.SetFloat("Speed", 1);
@@ -101,7 +103,7 @@ public class Player : MonoBehaviour
         else
             anim.SetFloat("Speed", 0);
         anim.SetFloat("VerticalSpeed", velocity.y);
-        
+        //*/
 
         velocity.y += Time.deltaTime * gravity;
 

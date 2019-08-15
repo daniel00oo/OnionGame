@@ -18,7 +18,7 @@ public class PlayerHover : MonoBehaviour
     {
         player = GetComponent<Player>();
         timeSinceHoverStart = player.staminaMax;
-        staminaPerFrame = staminaPerSecond * Time.deltaTime;
+        
         if (fallingSpeed > 0)
         {
             fallingSpeed *= -1;
@@ -28,6 +28,7 @@ public class PlayerHover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        staminaPerFrame = staminaPerSecond * Time.deltaTime;
         if (player.GetCollisionInfo().below == false)
         {
             if (Input.GetKey(player.jumpKey))
