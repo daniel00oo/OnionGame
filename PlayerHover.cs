@@ -36,13 +36,13 @@ public class PlayerHover : MonoBehaviour
                 {
                     player.drainStamina(staminaPerFrame);
                     player.velocity.y = fallingSpeed;
-                    //player.anim.SetBool("Gliding", true);
+                    player.anim.SetBool("Gliding", true);
                 }
                 
             }
             else
             {
-                //player.anim.SetBool("Gliding", false);
+                player.anim.SetBool("Gliding", false);
                 timeSinceHoverStart = Time.time;
             }
         }

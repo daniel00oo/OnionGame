@@ -39,6 +39,7 @@ public class Player : MonoBehaviour
         jumpKey = KeyCode.Space;
         currentJumpCount = nrOfJumps;
         staminaRechargePerFrame = secondsToFullStamina * Time.deltaTime;
+        currentStamina = staminaMax;
     }
 
     // Update is called once per frame
@@ -54,7 +55,7 @@ public class Player : MonoBehaviour
             
         }
         staminaSlider.value = currentStamina / staminaMax;
-        Debug.Log(currentStamina + " " + staminaSlider.value);
+        
         if (controller.collisions.left)
         {
             Debug.Log(true);
@@ -81,7 +82,7 @@ public class Player : MonoBehaviour
         velocity.x = input.x * moveSpeed;
 
         //Animation handling
-        /*
+        
         if (velocity.x > 0)
         {
             anim.SetFloat("Speed", 1);
@@ -100,7 +101,7 @@ public class Player : MonoBehaviour
         else
             anim.SetFloat("Speed", 0);
         anim.SetFloat("VerticalSpeed", velocity.y);
-        */
+        
 
         velocity.y += Time.deltaTime * gravity;
 
