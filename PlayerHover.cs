@@ -8,11 +8,21 @@ public class PlayerHover : MonoBehaviour
     Player player;
 
     public float fallingSpeed;
+    public float staminaPerSecond;
+
+    private float staminaPerFrame;
+    private float timeSinceHoverStart;
 
     // Start is called before the first frame update
     void Start()
     {
         player = GetComponent<Player>();
+        timeSinceHoverStart = player.staminaMax;
+        staminaPerFrame = staminaPerSecond * Time.deltaTime;
+        if (fallingSpeed > 0)
+        {
+            fallingSpeed *= -1;
+        }
     }
 
     // Update is called once per frame
@@ -22,16 +32,18 @@ public class PlayerHover : MonoBehaviour
         {
             if (Input.GetKey(player.jumpKey))
             {
-                if (player.velocity.y < 0)
+                if (player.velocity.y < 0 && player.HasStamina(staminaPerFrame))
                 {
+                    player.drainStamina(staminaPerFrame);
                     player.velocity.y = fallingSpeed;
-                    player.anim.SetBool("Gliding", true);
+                    //player.anim.SetBool("Gliding", true);
                 }
                 
             }
             else
             {
-                player.anim.SetBool("Gliding", false);
+                //player.anim.SetBool("Gliding", false);
+                timeSinceHoverStart = Time.time;
             }
         }
     }

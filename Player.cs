@@ -1,16 +1,26 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof (Movement2D))]
 public class Player : MonoBehaviour
 {
-    public Animator anim;
+    //public Animator anim;
     public float jumpHeight = 4f;
     public float jumptimeApex = .4f;
     public float moveSpeed = 6;
     float gravity;
+    [HideInInspector]
     public Vector3 velocity;
+    public float staminaMax;
+    private float currentStamina;
+    [Tooltip("Time it takes for stamina to start recharging")]
+    public float idleStaminaTime;
+    public float secondsToFullStamina;
+    private float staminaRechargeTimer;
+    private float staminaRechargePerFrame;
+    public Slider staminaSlider;
 
     public KeyCode jumpKey;
     public int nrOfJumps;
@@ -28,11 +38,23 @@ public class Player : MonoBehaviour
         controller = GetComponent<Movement2D>();
         jumpKey = KeyCode.Space;
         currentJumpCount = nrOfJumps;
+        staminaRechargePerFrame = secondsToFullStamina * Time.deltaTime;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Time.time - staminaRechargeTimer > idleStaminaTime && currentStamina < staminaMax)
+        {
+            RechargeStamina(staminaRechargePerFrame);
+            if (currentStamina > staminaMax)
+            {
+                currentStamina = staminaMax;
+            }
+            
+        }
+        staminaSlider.value = currentStamina / staminaMax;
+        Debug.Log(currentStamina + " " + staminaSlider.value);
         if (controller.collisions.left)
         {
             Debug.Log(true);
@@ -59,6 +81,7 @@ public class Player : MonoBehaviour
         velocity.x = input.x * moveSpeed;
 
         //Animation handling
+        /*
         if (velocity.x > 0)
         {
             anim.SetFloat("Speed", 1);
@@ -77,6 +100,7 @@ public class Player : MonoBehaviour
         else
             anim.SetFloat("Speed", 0);
         anim.SetFloat("VerticalSpeed", velocity.y);
+        */
 
         velocity.y += Time.deltaTime * gravity;
 
@@ -106,5 +130,22 @@ public class Player : MonoBehaviour
     {
         if (velocity.y < 0)
             velocity.y = glideStrength;
+    }
+    public void drainStamina(float quantity)
+    {
+        
+        currentStamina -= quantity;
+
+        staminaRechargeTimer = Time.time;
+
+        Mathf.Clamp(currentStamina, 0, staminaMax);
+    }
+    public bool HasStamina(float amountToDrain)
+    {
+        return currentStamina - amountToDrain > 0;
+    }
+    public void RechargeStamina(float amount)
+    {
+        currentStamina += amount;
     }
 }
