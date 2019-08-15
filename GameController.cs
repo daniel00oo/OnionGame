@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    public Canvas canvas;
+    public GameObject canvas;
 
     public int points = 0;
     public bool paused = false;

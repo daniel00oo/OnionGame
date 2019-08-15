@@ -32,20 +32,20 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetAxis("Horizontal") > 0)
         {
             Debug.Log(Input.GetAxis("Horizontal"));
-            rb2d.velocity.Set(speed, rb2d.velocity.y); 
+            rb2d.velocity = new Vector2(speed, rb2d.velocity.y); 
         }
         else if (Input.GetAxis("Horizontal") < 0)
         {
-            rb2d.velocity.Set(-speed, rb2d.velocity.y);
+            rb2d.velocity = new Vector2(-speed, rb2d.velocity.y);
         }
-        else
+        else if (Input.GetAxis("Horizontal") < 1)
         {
-            rb2d.velocity.Set(0, rb2d.velocity.y);
+            rb2d.velocity = new Vector2(0, rb2d.velocity.y);
         }
         */
-
+       
         rb2d.velocity = new Vector2(speed * Input.GetAxis("Horizontal"), rb2d.velocity.y);
-
+        
         if (Mathf.Abs(rb2d.velocity.x) > 0)
         {
             animator.SetFloat("Speed", Mathf.Abs(rb2d.velocity.x));
