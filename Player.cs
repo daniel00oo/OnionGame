@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public float jumptimeApex = .4f;
     public float moveSpeed = 6;
     float gravity;
-    Vector3 velocity;
+    public Vector3 velocity;
 
     public KeyCode jumpKey;
     public int nrOfJumps;
