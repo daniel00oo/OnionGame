@@ -64,4 +64,24 @@ public class Player : MonoBehaviour
         if (controller.collisions.below)
             prevBelow = true;
     }
+
+    public void SetGravity(float gravity)
+    {
+        this.gravity = gravity;
+    }
+    public float GetGravity()
+    {
+        return gravity;
+    }
+
+    public Movement2D.CollisionInfo GetCollisionInfo()
+    {
+        return controller.collisions;
+    }
+
+    public void Glide(float glideStrength)
+    {
+        if (velocity.y < 0)
+            velocity.y = glideStrength;
+    }
 }
