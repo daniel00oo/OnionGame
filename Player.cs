@@ -6,7 +6,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof (Movement2D))]
 public class Player : MonoBehaviour
 {
-    //public Animator anim;
+    public Animator anim;
     public float jumpHeight = 4f;
     public float jumptimeApex = .4f;
     public float moveSpeed = 6;
