@@ -12,12 +12,15 @@ public class PlayerHover : MonoBehaviour
 
     private float staminaPerFrame;
     private float timeSinceHoverStart;
+    private bool keyPressed;
+    
 
     // Start is called before the first frame update
     void Start()
-    {
+    {       
         player = GetComponent<Player>();
         timeSinceHoverStart = player.staminaMax;
+        keyPressed = false;
         
         if (fallingSpeed > 0)
         {
@@ -28,32 +31,44 @@ public class PlayerHover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        staminaPerFrame = staminaPerSecond * Time.deltaTime;
-        if (player.GetCollisionInfo().below == false)
+        if (!player.gm.paused)
         {
-            if (Input.GetKey(player.jumpKey))
+            staminaPerFrame = staminaPerSecond * Time.deltaTime;
+            if (player.GetCollisionInfo().below == false)
             {
-                if (player.velocity.y < 0 && player.HasStamina(staminaPerFrame))
+                keyPressed = false;
+                foreach (KeyCode jumpKey in player.jumpKeys)
                 {
-                    player.drainStamina(staminaPerFrame);
-                    player.velocity.y = fallingSpeed;
-                    player.anim.SetBool("Gliding", true);
+
+                    if (Input.GetKey(jumpKey))
+                    {
+                        keyPressed = true;
+                    }
+                }
+                if (keyPressed)
+                {
+                    if (player.velocity.y < 0 && player.HasStamina(staminaPerFrame))
+                    {
+                        player.drainStamina(staminaPerFrame);
+                        player.velocity.y = fallingSpeed;
+                        player.anim.SetBool("Gliding", true);
+                    }
+                    else
+                    {
+                        player.anim.SetBool("Gliding", false);
+                    }
+
                 }
                 else
                 {
+                    timeSinceHoverStart = Time.time;
                     player.anim.SetBool("Gliding", false);
                 }
-                
             }
             else
             {
-                timeSinceHoverStart = Time.time;
                 player.anim.SetBool("Gliding", false);
             }
-        }
-        else
-        {
-            player.anim.SetBool("Gliding", false);
         }
     }
 }

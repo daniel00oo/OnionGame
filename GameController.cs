@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public GameObject canvas;
+    public KeyCode[] menuKeys;
 
     public int points = 0;
     public bool paused = false;
@@ -18,18 +19,21 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        foreach (KeyCode menuKey in menuKeys)
         {
-            paused = !paused;
-        }
+            if (Input.GetKeyDown(menuKey))
+            {
+                paused = !paused;
+            }
 
-        if (paused == true)
-        {
-            Pause();
-        }
-        else
-        {
-            Resume();
+            if (paused == true)
+            {
+                Pause();
+            }
+            else
+            {
+                Resume();
+            }
         }
     }
 
