@@ -5,8 +5,13 @@ using UnityEngine;
 public class ButtonHandler : MonoBehaviour
 {
     public GameController g;
-    public void onClick()
+    public void OnClickResume()
     {
         g.paused = false;
+    }
+
+    public void OnClickExitGame()
+    {
+        Application.Quit();
     }
 }
