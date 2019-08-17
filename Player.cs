@@ -4,11 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof (Movement2D))]
+[RequireComponent(typeof (SpriteRenderer))]
 public class Player : MonoBehaviour
 {
     [Header("External objects")]
     public GameController gm;
     public Animator anim;
+
+    private SpriteRenderer sr;
 
     [Header("Jump variables")]
     public float jumpHeight = 4f;
@@ -22,17 +25,29 @@ public class Player : MonoBehaviour
     float gravity;
     [HideInInspector]
     public Vector3 velocity;
+
     [Header("Movement variables")]
     public float moveSpeed = 6;
+    private Vector3 startPos;
+
     [Header("Stamina variables")]
     public float staminaMax;
     public float currentStamina;
+
     [Tooltip("Time it takes for stamina to start recharging")]
     public float idleStaminaTime;
     public float secondsToFullStamina;
     private float staminaRechargeTimer;
     private float staminaRechargePerFrame;
     public Slider staminaSlider;
+
+    [Header("Health variables")]
+    public int maxHeartCount = 3;
+    public int numberOfLives = 2;
+    private float lastTimeTookDamage;
+    public float invincibilitySeconds = 1;
+    private int currentHeartCount;
+    private int currentLivesCounter;
 
     private bool prevBelow;
 
@@ -44,7 +59,12 @@ public class Player : MonoBehaviour
         jumpVelocity = -gravity * jumptimeApex;
         controller = GetComponent<Movement2D>();
         currentJumpCount = nrOfJumps;
-        
+        lastTimeTookDamage = Time.time;
+        sr = GetComponent<SpriteRenderer>();
+        startPos = transform.position;
+
+        currentHeartCount = maxHeartCount;
+        currentLivesCounter = numberOfLives;
         currentStamina = staminaMax;
     }
 
@@ -95,17 +115,14 @@ public class Player : MonoBehaviour
             if (velocity.x > 0)
             {
                 anim.SetFloat("Speed", 1);
-                if (transform.localScale.x < 0)
-                    transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
-
+                sr.flipX = false;
             }
 
 
             else if (velocity.x < 0)
             {
                 anim.SetFloat("Speed", 1);
-                if (transform.localScale.x > 0)
-                    transform.localScale = new Vector3(transform.localScale.x * -1, transform.localScale.y, transform.localScale.z);
+                sr.flipX = true;
             }
             else
                 anim.SetFloat("Speed", 0);
@@ -158,5 +175,52 @@ public class Player : MonoBehaviour
     public void RechargeStamina(float amount)
     {
         currentStamina += amount;
+    }
+
+    // Health handling
+
+    public void TakeDamage(int amount)
+    {
+        if (Time.time - lastTimeTookDamage > invincibilitySeconds)
+        {
+            lastTimeTookDamage = Time.time;
+            currentHeartCount -= amount;
+
+            if (currentHeartCount < 0)
+            {
+                Death();
+            }
+            else
+            {
+                StartCoroutine("TakeDamageAnimation");
+            }
+        }
+    }
+
+    public void Death()
+    {
+        currentLivesCounter--;
+        if (currentLivesCounter < 0)
+        {
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            transform.position = startPos;
+            currentHeartCount = maxHeartCount;
+
+            StartCoroutine("TakeDamageAnimation");
+        }
+    }
+
+    IEnumerator TakeDamageAnimation()
+    {
+        while (Time.time - lastTimeTookDamage < invincibilitySeconds)
+        {
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.5f);
+            yield return null;
+        }
+
+        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
     }
 }
