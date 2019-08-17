@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
 
     [Header("Movement variables")]
     public float moveSpeed = 6;
+    public float airDrag = 1;
+    public float groundDrag = 6;
     private Vector3 startPos;
 
     [Header("Stamina variables")]
@@ -108,7 +110,21 @@ public class Player : MonoBehaviour
 
             Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-            velocity.x = input.x * moveSpeed;
+            //velocity.x = input.x * moveSpeed;
+
+            if (Mathf.Abs(velocity.x) < moveSpeed)
+            {
+                velocity.x = input.x * moveSpeed;
+            }
+            else if (!controller.collisions.below)
+            {
+                velocity.x -= airDrag * Mathf.Sign(velocity.x);
+            }
+            else if (controller.collisions.below)
+            {
+                velocity.x -= groundDrag * Mathf.Sign(velocity.x);
+            }
+            
 
             //Animation handling
             ///*
@@ -179,7 +195,7 @@ public class Player : MonoBehaviour
 
     // Health handling
 
-    public void TakeDamage(int amount)
+    public void TakeDamage(int amount, Vector3 sourcePosition, float force)
     {
         if (Time.time - lastTimeTookDamage > invincibilitySeconds)
         {
@@ -192,6 +208,7 @@ public class Player : MonoBehaviour
             }
             else
             {
+                OnDamageVelocity(sourcePosition, force);
                 StartCoroutine("TakeDamageAnimation");
             }
         }
@@ -213,12 +230,23 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnDamageVelocity(Vector3 source, float force)
+    {
+        controller.collisions.below = false;
+        velocity.y = force * Mathf.Sign(transform.position.y - source.y);
+        velocity.x = force * Mathf.Sign(transform.position.x - source.x);
+    }
+
     IEnumerator TakeDamageAnimation()
     {
         while (Time.time - lastTimeTookDamage < invincibilitySeconds)
         {
             sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.5f);
-            yield return null;
+            for(int i = 0; i < 10; i++)
+                yield return null;
+            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
+            for (int i = 0; i < 10; i++)
+                yield return null;
         }
 
         sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);

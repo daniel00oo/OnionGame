@@ -6,6 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof (Rigidbody2D))]
 public class HarmfulSpike : MonoBehaviour
 {
+    public float forceKnockBack = 5;
+
     BoxCollider2D box;
     Rigidbody2D rb;
 
@@ -22,7 +24,7 @@ public class HarmfulSpike : MonoBehaviour
     {
         if(collision.gameObject.tag == "Player")
         {
-            collision.GetComponent<Player>().TakeDamage(1);
+            collision.GetComponent<Player>().TakeDamage(1, transform.position, forceKnockBack);
         }
     }
 }
