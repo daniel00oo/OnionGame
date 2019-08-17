@@ -10,14 +10,20 @@ public class Collectible : MonoBehaviour
     {
         if (collision.gameObject.name == "Player")
         {
-            Collected();
+            OnPickup();
+            AfterPickup();
         }
     }
 
-    private void Collected()
+    // Default behaviour of a pickup item
+    virtual protected void OnPickup()
     {
         Debug.Log("Collected " + gameObject.name + " Points: " + gc.points.ToString());
         gc.points += 10;
+    }
+
+    virtual protected void AfterPickup()
+    {
         Destroy(gameObject);
     }
 }

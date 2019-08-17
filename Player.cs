@@ -6,14 +6,25 @@ using UnityEngine.UI;
 [RequireComponent(typeof (Movement2D))]
 public class Player : MonoBehaviour
 {
+    [Header("External objects")]
     public GameController gm;
     public Animator anim;
+
+    [Header("Jump variables")]
     public float jumpHeight = 4f;
     public float jumptimeApex = .4f;
-    public float moveSpeed = 6;
+    
+    public KeyCode[] jumpKeys;
+    public int nrOfJumps;
+    private int currentJumpCount;
+    float jumpVelocity = 8;
+
     float gravity;
     [HideInInspector]
     public Vector3 velocity;
+    [Header("Movement variables")]
+    public float moveSpeed = 6;
+    [Header("Stamina variables")]
     public float staminaMax;
     public float currentStamina;
     [Tooltip("Time it takes for stamina to start recharging")]
@@ -22,11 +33,6 @@ public class Player : MonoBehaviour
     private float staminaRechargeTimer;
     private float staminaRechargePerFrame;
     public Slider staminaSlider;
-
-    public KeyCode[] jumpKeys;
-    public int nrOfJumps;
-    private int currentJumpCount;
-    float jumpVelocity = 8;
 
     private bool prevBelow;
 
