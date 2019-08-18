@@ -142,12 +142,17 @@ public class Player : MonoBehaviour
 
                 Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
 
-                if (Mathf.Abs(velocity.x) < moveSpeed)
-                    velocity.x = input.x * moveSpeed;
-                else
+                if (input.x != 0)
                 {
-                    if (Mathf.Sign(input.x) != Mathf.Sign(velocity.x))
-                        velocity.x += (input.x * moveSpeed) / 10;
+                    if (Mathf.Abs(velocity.x) < moveSpeed)
+                    {
+                        velocity.x = input.x * moveSpeed;
+                    }
+                    else
+                    {
+                        if (Mathf.Sign(input.x) != Mathf.Sign(velocity.x))
+                            velocity.x += (input.x * moveSpeed) / 10;
+                    }
                 }
             }
             

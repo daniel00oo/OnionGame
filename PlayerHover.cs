@@ -13,6 +13,8 @@ public class PlayerHover : MonoBehaviour
     private float staminaPerFrame;
     private float timeSinceHoverStart;
     private bool keyPressed;
+
+    public bool externalCanGlide = false;
     
 
     // Start is called before the first frame update
@@ -31,6 +33,7 @@ public class PlayerHover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         if (!player.gm.paused)
         {
             staminaPerFrame = staminaPerSecond * Time.deltaTime;
@@ -47,7 +50,7 @@ public class PlayerHover : MonoBehaviour
                 }
                 if (keyPressed)
                 {
-                    if (player.velocity.y < 0 && player.HasStamina(staminaPerFrame))
+                    if ((player.velocity.y < 0 && player.HasStamina(staminaPerFrame)) || externalCanGlide)
                     {
                         player.DrainStamina(staminaPerFrame);
                         player.velocity.y = fallingSpeed;
@@ -61,7 +64,6 @@ public class PlayerHover : MonoBehaviour
                 }
                 else
                 {
-                    timeSinceHoverStart = Time.time;
                     player.anim.SetBool("Gliding", false);
                 }
             }
