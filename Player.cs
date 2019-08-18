@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof (Movement2D))]
+[RequireComponent(typeof (HealthBar))]
 public class Player : MonoBehaviour
 {
     [Header("External objects")]
     public GameController gm;
     public Animator anim;
     public SpriteRenderer srPlayer;
+    private HealthBar healthBar;
 
     [Header("Jump variables")]
     public float jumpHeight = 4f;
@@ -59,6 +61,8 @@ public class Player : MonoBehaviour
         gravity = -(2 * jumpHeight) / Mathf.Pow(jumptimeApex, 2);
         jumpVelocity = -gravity * jumptimeApex;
         controller = GetComponent<Movement2D>();
+        healthBar = GetComponent<HealthBar>();
+        healthBar.RedrawHearts(maxHeartCount);
         currentJumpCount = nrOfJumps;
         lastTimeTookDamage = Time.time;
         startPos = transform.position;
@@ -231,7 +235,9 @@ public class Player : MonoBehaviour
             lastTimeTookDamage = Time.time;
             currentHeartCount -= amount;
 
-            if (currentHeartCount < 0)
+            healthBar.RedrawHearts(currentHeartCount);
+
+            if (currentHeartCount <= 0)
             {
                 Death();
             }
@@ -254,6 +260,7 @@ public class Player : MonoBehaviour
         {
             transform.position = startPos;
             currentHeartCount = maxHeartCount;
+            healthBar.RedrawHearts(currentHeartCount);
 
             StartCoroutine("TakeDamageAnimation");
         }
