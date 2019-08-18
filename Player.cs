@@ -30,12 +30,13 @@ public class Player : MonoBehaviour
     public float moveSpeed = 6;
     public float airDrag = 1;
     public float groundDrag = 6;
+    private bool canMove = true;
+    private float currentCantMoveTimer;
     private Vector3 startPos;
 
     [Header("Stamina variables")]
     public float staminaMax;
     public float currentStamina;
-
     [Tooltip("Time it takes for stamina to start recharging")]
     public float idleStaminaTime;
     public float secondsToFullStamina;
@@ -94,38 +95,62 @@ public class Player : MonoBehaviour
                 prevBelow = false;
                 currentJumpCount--;
             }
-            if (controller.collisions.above || controller.collisions.below)
+            if (controller.collisions.above && velocity.y > 0)
                 velocity.y = 0;
+            if (controller.collisions.below && velocity.y < 0)
+                velocity.y = 0;
+            if (controller.collisions.right && velocity.x > 0)
+                velocity.x = 0;
+            if (controller.collisions.left && velocity.x < 0)
+                velocity.x = 0;
+
             if (controller.collisions.below)
                 currentJumpCount = nrOfJumps;
 
-            foreach (KeyCode jumpKey in jumpKeys)
+            if (controller.collisions.below)
             {
-                if (Input.GetKeyDown(jumpKey) && currentJumpCount > 0)
+                if (Mathf.Abs(velocity.x) < groundDrag)
                 {
-                    currentJumpCount--;
-                    velocity.y = jumpVelocity;
+                    velocity.x = 0;
+                }
+                else
+                {
+                    velocity.x -= groundDrag * Mathf.Sign(velocity.x);
                 }
             }
-
-            Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
-
-            //velocity.x = input.x * moveSpeed;
-
-            if (Mathf.Abs(velocity.x) < moveSpeed)
+            else
             {
-                velocity.x = input.x * moveSpeed;
+                if (Mathf.Abs(velocity.x) < airDrag)
+                {
+                    velocity.x = 0;
+                }
+                else
+                {
+                    velocity.x -= airDrag * Mathf.Sign(velocity.x);
+                }
             }
-            else if (!controller.collisions.below)
+            if (canMove)
             {
-                velocity.x -= airDrag * Mathf.Sign(velocity.x);
-            }
-            else if (controller.collisions.below)
-            {
-                velocity.x -= groundDrag * Mathf.Sign(velocity.x);
+                foreach (KeyCode jumpKey in jumpKeys)
+                {
+                    if (Input.GetKeyDown(jumpKey) && currentJumpCount > 0)
+                    {
+                        currentJumpCount--;
+                        velocity.y = jumpVelocity;
+                    }
+                }
+
+                Vector2 input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+                if (Mathf.Abs(velocity.x) < moveSpeed)
+                    velocity.x = input.x * moveSpeed;
+                else
+                {
+                    if (Mathf.Sign(input.x) != Mathf.Sign(velocity.x))
+                        velocity.x += (input.x * moveSpeed) / 10;
+                }
             }
             
-
             //Animation handling
             ///*
             if (velocity.x > 0)
@@ -145,6 +170,8 @@ public class Player : MonoBehaviour
             anim.SetFloat("VerticalSpeed", velocity.y);
             //*/
 
+            
+            
             velocity.y += Time.deltaTime * gravity;
 
             controller.Move(velocity * Time.deltaTime);
@@ -175,7 +202,7 @@ public class Player : MonoBehaviour
         if (velocity.y < 0)
             velocity.y = glideStrength;
     }
-    public void drainStamina(float quantity)
+    public void DrainStamina(float quantity)
     {
         
         currentStamina -= quantity;
@@ -232,9 +259,32 @@ public class Player : MonoBehaviour
 
     void OnDamageVelocity(Vector3 source, float force)
     {
-        controller.collisions.below = false;
         velocity.y = force * Mathf.Sign(transform.position.y - source.y);
         velocity.x = force * Mathf.Sign(transform.position.x - source.x);
+        currentCantMoveTimer = Time.time;
+        StartCoroutine("AfterHitMovementBlock");
+    }
+
+    IEnumerator AfterHitMovementBlock()
+    {
+        canMove = false;
+        while (Time.time - currentCantMoveTimer < 0.5f)
+        {
+            yield return null;
+        }
+        canMove = true;
+    }
+
+    public void AddForce(Vector2 direction, float force)
+    {
+        if (direction.y != 0)
+        {
+            velocity.y += force * (direction.y - transform.position.y);
+        }
+        if (direction.x != 0)
+        {
+            velocity.x += force * (direction.x - transform.position.x);
+        }
     }
 
     IEnumerator TakeDamageAnimation()

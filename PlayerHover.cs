@@ -49,7 +49,7 @@ public class PlayerHover : MonoBehaviour
                 {
                     if (player.velocity.y < 0 && player.HasStamina(staminaPerFrame))
                     {
-                        player.drainStamina(staminaPerFrame);
+                        player.DrainStamina(staminaPerFrame);
                         player.velocity.y = fallingSpeed;
                         player.anim.SetBool("Gliding", true);
                     }
