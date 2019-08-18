@@ -4,14 +4,12 @@ using UnityEngine;
 using UnityEngine.UI;
 
 [RequireComponent(typeof (Movement2D))]
-[RequireComponent(typeof (SpriteRenderer))]
 public class Player : MonoBehaviour
 {
     [Header("External objects")]
     public GameController gm;
     public Animator anim;
-
-    private SpriteRenderer sr;
+    public SpriteRenderer srPlayer;
 
     [Header("Jump variables")]
     public float jumpHeight = 4f;
@@ -63,7 +61,6 @@ public class Player : MonoBehaviour
         controller = GetComponent<Movement2D>();
         currentJumpCount = nrOfJumps;
         lastTimeTookDamage = Time.time;
-        sr = GetComponent<SpriteRenderer>();
         startPos = transform.position;
 
         currentHeartCount = maxHeartCount;
@@ -161,14 +158,14 @@ public class Player : MonoBehaviour
             if (velocity.x > 0)
             {
                 anim.SetFloat("Speed", 1);
-                sr.flipX = false;
+                srPlayer.flipX = false;
             }
 
 
             else if (velocity.x < 0)
             {
                 anim.SetFloat("Speed", 1);
-                sr.flipX = true;
+                srPlayer.flipX = true;
             }
             else
                 anim.SetFloat("Speed", 0);
@@ -296,14 +293,14 @@ public class Player : MonoBehaviour
     {
         while (Time.time - lastTimeTookDamage < invincibilitySeconds)
         {
-            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 0.5f);
+            srPlayer.color = new Color(srPlayer.color.r, srPlayer.color.g, srPlayer.color.b, 0.5f);
             for(int i = 0; i < 10; i++)
                 yield return null;
-            sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
+            srPlayer.color = new Color(srPlayer.color.r, srPlayer.color.g, srPlayer.color.b, 1f);
             for (int i = 0; i < 10; i++)
                 yield return null;
         }
 
-        sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, 1f);
+        srPlayer.color = new Color(srPlayer.color.r, srPlayer.color.g, srPlayer.color.b, 1f);
     }
 }

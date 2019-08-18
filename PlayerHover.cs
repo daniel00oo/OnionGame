@@ -9,10 +9,12 @@ public class PlayerHover : MonoBehaviour
 
     public float fallingSpeed;
     public float staminaPerSecond;
+    public float glideTilt = 0.1f;
 
     private float staminaPerFrame;
     private float timeSinceHoverStart;
     private bool keyPressed;
+    public SpriteRenderer sr;
 
     public bool externalCanGlide = false;
     
@@ -55,21 +57,35 @@ public class PlayerHover : MonoBehaviour
                         player.DrainStamina(staminaPerFrame);
                         player.velocity.y = fallingSpeed;
                         player.anim.SetBool("Gliding", true);
+                        if (player.velocity.x != 0)
+                        {
+                            float newTilt = Mathf.Lerp(sr.transform.rotation.z, -player.velocity.x, glideTilt * Time.deltaTime);
+                            sr.transform.rotation = new Quaternion(0, 0, newTilt, 1);
+                        }
+                        else
+                        {
+                            float newTilt = Mathf.Lerp(sr.transform.rotation.z, 0, glideTilt * 100 * Time.deltaTime);
+                            sr.transform.rotation = new Quaternion(0, 0, newTilt, 1);
+                        }
                     }
                     else
                     {
                         player.anim.SetBool("Gliding", false);
+                        float newTilt = Mathf.Lerp(sr.transform.rotation.z, 0, glideTilt * 100 * Time.deltaTime);
+                        sr.transform.rotation = new Quaternion(0, 0, newTilt, 1);
                     }
-
                 }
                 else
                 {
                     player.anim.SetBool("Gliding", false);
+                    float newTilt = Mathf.Lerp(sr.transform.rotation.z, 0, glideTilt * 100 * Time.deltaTime);
+                    sr.transform.rotation = new Quaternion(0, 0, newTilt, 1);
                 }
             }
             else
             {
                 player.anim.SetBool("Gliding", false);
+                sr.transform.rotation = new Quaternion(0, 0, 0, 1);
             }
         }
     }
