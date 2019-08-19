@@ -11,11 +11,6 @@ public class HealthBar : MonoBehaviour
 
     private Image[] hearts = null;
 
-    void Start()
-    {
-        hearts = null;
-    }
-
     public void RedrawHearts(int heartCount)
     {
         if (hearts != null)
